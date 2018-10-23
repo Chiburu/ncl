@@ -3,6 +3,16 @@ Notes Commandline Tool
 
 コマンドラインからNotes C APIを通してNotes環境にアクセスするコマンドツールです。
 
+# Requirement
+
+  * Visual Studio(C++) (>= 2015)
+
+  * Qt (>= 5.2)
+
+  * IBM Notesクライアント
+
+  * IBM C API Toolkit(Notesクライアントのバージョンと合わせる)
+
 # History
 
 * v0.0.1 - 2018-10-23
