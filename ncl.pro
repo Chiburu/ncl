@@ -21,3 +21,50 @@ SOURCES += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+# ===== ここまでQtコンソールアプリケーションの既定値 =====
+
+# アプリケーション説明
+QMAKE_TARGET_PRODUCT = Notes Commandline
+QMAKE_TARGET_DESCRIPTION = Notes Commandline Tool
+QMAKE_TARGET_COPYRIGHT = (c) Chiburu Systems
+
+# バージョン設定
+VERSION = 0.0.1
+
+# 翻訳ファイル
+TRANSLATIONS += ncl.ja_JP.ts
+
+# Notes C APIのインストール先(区切りはWindowsでもスラッシュ)
+NOTES_C_API_DIR = Z:/Users/Shared/notesapi
+
+# Notes C APIのインクルードファイルの場所
+INCLUDEPATH += $$NOTES_C_API_DIR/include
+DEPENDPATH += $$NOTES_C_API_DIR/include
+
+# Windowsの場合
+win32 {
+  # Windowsに必要なシンボル
+  DEFINES += W W32 NT
+  # 不要な警告を非表示
+  QMAKE_CXXFLAGS += -wd4503 -wd4005
+  # 64ビット版
+  contains(QMAKE_TARGET.arch, x86_64) {
+    DEFINES += W64 ND64 _AMD64_
+    LIBS += -L$$NOTES_C_API_DIR/lib/mswin64/
+  }
+  # 32ビット版
+  else {
+    LIBS += -L$$NOTES_C_API_DIR/lib/mswin32/
+  }
+}
+
+# OS共通のリンクライブラリ
+LIBS += -lnotes
+
+DISTFILES += \
+    ncl.ja_JP.ts \
+    Readme.md
+
+RESOURCES += \
+    ncl.qrc
