@@ -15,7 +15,9 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-        main.cpp
+        main.cpp \
+    getserverlatency.cpp \
+    result.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -30,7 +32,7 @@ QMAKE_TARGET_DESCRIPTION = Notes Commandline Tool
 QMAKE_TARGET_COPYRIGHT = (c) Chiburu Systems
 
 # バージョン設定
-VERSION = 0.0.1
+VERSION = 0.0.2
 
 # 翻訳ファイル
 TRANSLATIONS += ncl.ja_JP.ts
@@ -68,3 +70,7 @@ DISTFILES += \
 
 RESOURCES += \
     ncl.qrc
+
+HEADERS += \
+    getserverlatency.h \
+    result.h

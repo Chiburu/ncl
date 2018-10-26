@@ -1,30 +1,40 @@
 ﻿#include <QCoreApplication>
 #include <QTranslator>
 #include <QLocale>
-#include <QTextStream>
 
-// Notes C APIのインクルードは、Windowsではアラインメントを1バイトにして読み込む。
-#ifdef NT
-#pragma pack(push, 1)
-#endif
+#include "getserverlatency.h"
 
-#include <global.h>
-#include <nsfdb.h>
-
-#ifdef NT
-#pragma pack(pop)
-#endif
-
-// 待ち時間を読み取る場合はこのシグネチャを有効にする。
-//#define GET_LATENCY_TIME
+/**
+ * @brief 結果を出力する。
+ * @param out 出力先ストリーム
+ * @param result 関数オブジェクトの戻り値(Result)
+ * @param header 出力ヘッダテキスト
+ * @param key 出力値のキーワード
+ * @param tempText 出力テキストのテンプレート
+ */
+void outputResult(QTextStream &out,
+                  const Result &result,
+                  const QString &header,
+                  const QString &key,
+                  const QString &tempText
+                  )
+{
+  if (result.contains(key))
+    out << header
+        << ": "
+        << tempText.arg(result.value(key).toUInt())
+        << endl;
+}
 
 // 自身で到達させたいサーバ名を設定する。
 const char *pServer = "Your/server/name";
 
 int main(int argc, char *argv[])
 {
+  // Qtアプリケーションの初期化
   QCoreApplication app(argc, argv);
 
+  // 翻訳処理
   QTranslator translator;
   translator.load(QLocale(), "ncl", ".", ":/translations", ".qm");
   app.installTranslator(&translator);
@@ -33,57 +43,41 @@ int main(int argc, char *argv[])
   QTextStream out(stdout, QIODevice::WriteOnly);
 
   // Notes C APIを初期化する。
-  STATUS initStatus = NotesInitExtended(argc, argv);
+  Result initStatus = NotesInitExtended(argc, argv);
   out << QObject::tr("NotesInitExtended status")
       << ": "
-      << ERR(initStatus)
+      << initStatus.error()
       << endl;
 
-  // 戻り値格納変数を用意する。
-  WORD serverVersion = 0;
-#ifdef GET_LATENCY_TIME
-  DWORD clientToServer_ms, serverToClient_ms;
-#endif
-
-  // API関数を実行する。
-  STATUS status = NSFGetServerLatency(
-        const_cast<char*>(pServer),
-        0, // <- 既定のタイムアウト時間を指定
-#ifdef GET_LATENCY_TIME
-        &clientToServer_ms, &serverToClient_ms,
-#else
-        nullptr, nullptr,
-#endif
-        &serverVersion
-        );
+  // レイテンシ(待ち時間)とサーバのバージョンを取得する。
+  Result result = GetServerLatency()(pServer);
   out << QObject::tr("NSFGetServerLatency status")
       << ": "
-      << ERR(status)
+      << result.error()
       << endl;
 
-  // エラーがあれば終了する。
-  if (ERR(status) != NOERROR) {
-    return 1;
+  // エラーがなければ・・・
+  if (result.noError()) {
+    // 戻り値を標準出力に表示する。
+    outputResult( out, result,
+          QObject::tr("Build version of '%1'").arg(pServer),
+          GetServerLatency::KEY_VERSION,
+          QString("%1")
+          );
+    outputResult( out, result,
+          QObject::tr("Latency time for client to server"),
+          GetServerLatency::KEY_LATENCY_C2S,
+          QString("%1 ms")
+          );
+    outputResult( out, result,
+          QObject::tr("Latency time for server to client"),
+          GetServerLatency::KEY_LATENCY_S2C,
+          QString("%1 ms")
+          );
   }
 
-  // 戻り値を標準出力に表示する。
-  out << QObject::tr("Build version of '%1'").arg(pServer)
-      << ": "
-      << serverVersion
-      << endl;
-#ifdef GET_LATENCY_TIME
-  out << QObject::tr("Latency time for client to server")
-      << ": "
-      << QString("%1 ms").arg(clientToServer_ms)
-      << endl
-      << QObject::tr("Latency time for server to client")
-      << ": "
-      << QString("%1 ms").arg(serverToClient_ms)
-      << endl;
-#endif
-
   // Notes C APIを終了する。
-  if (ERR(initStatus) == NOERROR)
+  if (initStatus.noError())
     NotesTerm();
 
   return 0;

@@ -15,6 +15,11 @@ Notes Commandline Tool
 
 # History
 
+* v0.0.2 - 2018-10-26
+
+  * NSFGetServerLatency関数をラップして、関数オブジェクトにします。
+  * STATUSとその他の値を1オブジェクトで返すことが可能なクラスResultを定義します。
+
 * v0.0.1 - 2018-10-23
 
   * NSFGetServerLatency関数を利用して、pServer定数に指定したサーバのバージョン(ビルド番号)を取得します。
