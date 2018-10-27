@@ -15,6 +15,16 @@ Notes Commandline Tool
 
 # History
 
+* v0.0.3 - 2018-10-27
+
+  * GetServerLatency関数オブジェクトをコマンド化します。
+
+  ```
+  > ncl get-server-latency --server=yourserver --return=ver,c2s,s2c
+  >
+  > ver=405,c2s=0,s2c=10
+  ```
+
 * v0.0.2 - 2018-10-26
 
   * NSFGetServerLatency関数をラップして、関数オブジェクトにします。

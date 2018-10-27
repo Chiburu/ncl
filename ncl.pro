@@ -17,7 +17,10 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
     getserverlatency.cpp \
-    result.cpp
+    result.cpp \
+    cmdlineparams.cpp \
+    getserverlatencycmd.cpp \
+    parsecmdline.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -32,7 +35,7 @@ QMAKE_TARGET_DESCRIPTION = Notes Commandline Tool
 QMAKE_TARGET_COPYRIGHT = (c) Chiburu Systems
 
 # バージョン設定
-VERSION = 0.0.2
+VERSION = 0.0.3
 
 # 翻訳ファイル
 TRANSLATIONS += ncl.ja_JP.ts
@@ -73,4 +76,11 @@ RESOURCES += \
 
 HEADERS += \
     getserverlatency.h \
-    result.h
+    result.h \
+    cmdlineparams.h \
+    getserverlatencycmd.h \
+    parsecmdline.h
+
+# rxcpp
+INCLUDEPATH += C:/Users/tkond/Documents/WinAppProjects/RxCpp/Rx/v2/src
+DEPENDPATH += C:/Users/tkond/Documents/WinAppProjects/RxCpp/Rx/v2/src
